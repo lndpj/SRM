@@ -144,7 +144,7 @@ int main(void)
     SRM = SRMCore::Make(&iface, nullptr);
     assert(SRM && "Failed to create SRMCore");
 
-    LibseatSrc = CZEventSource::Make(libseat_get_fd(Seat), EPOLLIN, CZOwn::Borrow, [](auto, auto){
+    LibseatSrc = CZEventSource::Make(libseat_get_fd(Seat), EPOLLIN, CZOwn::Borrow, [](auto, auto, auto){
         libseat_dispatch(Seat, 0);
     });
 

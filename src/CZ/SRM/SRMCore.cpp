@@ -249,7 +249,7 @@ bool SRMCore::initMonitor() noexcept
         return false;
     }
 
-    m_source = CZEventSource::Make(udev_monitor_get_fd(m_monitor), EPOLLIN, CZOwn::Borrow, [this](auto, auto){
+    m_source = CZEventSource::Make(udev_monitor_get_fd(m_monitor), EPOLLIN, CZOwn::Borrow, [this](auto, auto, auto){
         dispatch(0);
     });
 

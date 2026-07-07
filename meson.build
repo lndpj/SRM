@@ -2,7 +2,7 @@ project(
     'cz-srm',
     'c', 'cpp',
     version : run_command('cat', 'VERSION', check : false).stdout(),
-    meson_version: '>= 0.59.0',
+    meson_version: '>= 0.60.0',
     default_options: [
         'warning_level=2',
         'buildtype=release',
