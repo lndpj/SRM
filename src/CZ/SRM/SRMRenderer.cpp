@@ -500,6 +500,29 @@ bool SRMRenderer::initSwapchainPrime() noexcept
     if (textureFormats.formats().empty())
         return false;
 
+    // PRIME renders on the main device and samples the result on the connector's device, which
+    // requires cross-device sampling (e.g. dma-buf export/import). Not all backends/GPUs support
+    // it (the Ream Vulkan backend does when the buffer is dma-shareable). Probe it explicitly and,
+    // if unavailable, bail so initSwapchain() falls back to the (always-available) Dumb strategy —
+    // rather than allocating the PRIME scanout buffers first and only then discovering it can't work.
+    {
+        auto probeIt { textureFormats.formats().find(DRM_FORMAT_XRGB8888) };
+        if (probeIt == textureFormats.formats().end())
+            probeIt = textureFormats.formats().find(DRM_FORMAT_XBGR8888);
+        if (probeIt == textureFormats.formats().end())
+            probeIt = textureFormats.formats().begin();
+
+        RImageConstraints probe {};
+        probe.allocator = ream->mainDevice();
+        probe.caps[ream->mainDevice()] = RImageCap_Dst;          // rendered on the main device
+        probe.caps[device()->reamDevice()] = RImageCap_Src;      // sampled on the connector's device
+        if (!RImage::Make(conn->currentMode()->size(), *probeIt, &probe))
+        {
+            log(CZTrace, CZLN, "PRIME unavailable: cross-device sampling not supported; falling back to Dumb");
+            return false;
+        }
+    }
+
     const auto inFormats { RDRMFormatSet::Intersect(primaryPlane->formats(), device()->reamDevice()->renderFormats()) };
 
     if (inFormats.formats().empty())
