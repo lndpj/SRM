@@ -170,6 +170,7 @@ private:
     bool m_forceLegacyCursor {};
     bool m_disableCursor {};
     bool m_disableScanout {};
+    bool m_inFenceFd { true };
 
     std::shared_ptr<RCore> m_ream;
 

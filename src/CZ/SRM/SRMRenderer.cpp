@@ -747,7 +747,7 @@ bool SRMRenderer::flipPage() noexcept
 
 bool SRMRenderer::flipPageSelf() noexcept
 {
-    if (device()->clientCaps().Atomic && primaryPlane->m_propIDs.IN_FENCE_FD)
+    if (device()->core()->m_inFenceFd && device()->clientCaps().Atomic && primaryPlane->m_propIDs.IN_FENCE_FD)
     {
         if (swapchain.image()->writeSync())
         {
@@ -784,7 +784,7 @@ bool SRMRenderer::flipPagePrime() noexcept
 
     auto primeImage { swapchain.primeImage() };
 
-    if (device()->clientCaps().Atomic && primaryPlane->m_propIDs.IN_FENCE_FD)
+    if (device()->core()->m_inFenceFd && device()->clientCaps().Atomic && primaryPlane->m_propIDs.IN_FENCE_FD)
     {
         if (primeImage->writeSync())
             inFence.reset(primeImage->writeSync()->fd().release());

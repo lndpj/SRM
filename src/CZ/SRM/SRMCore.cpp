@@ -120,6 +120,7 @@ bool SRMCore::init() noexcept
     setenv("CZ_SRM_DISABLE_CUSTOM_SCANOUT",        "0", 0);
     setenv("CZ_SRM_DISABLE_CURSOR",                "0", 0);
     setenv("CZ_SRM_NVIDIA_CURSOR",                 "1", 0);
+    setenv("CZ_SRM_IN_FENCE_FD",                   "1", 0);
 
     SRMLog(CZInfo, "SRM version {}.{}.{}.",
            CZ_SRM_VERSION_MAJOR,
@@ -137,6 +138,10 @@ bool SRMCore::init() noexcept
     env = getenv("CZ_SRM_FORCE_LEGACY_CURSOR");
     m_forceLegacyCursor = env && atoi(env) == 1;
     SRMLog(CZInfo, "Forcing Legacy Cursor IOCTLs: {}.", m_forceLegacyCursor);
+
+    env = getenv("CZ_SRM_IN_FENCE_FD");
+    m_inFenceFd = !env || atoi(env) != 0;
+    SRMLog(CZInfo, "Primary Plane IN_FENCE_FD Enabled: {}.", m_inFenceFd);
 
     const bool ret {
         initUdev() &&
